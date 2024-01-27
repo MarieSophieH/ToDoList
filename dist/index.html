@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-text">My To Dos</div>
+    </div>
+
+    <div class="main">
+      <div class="navbar">
+        Navbar
+      </div>
+      <div class="content">
+        <table id="toDoTable">
+          <tr>
+              <th>Title</th>
+              <th>Priority</th>
+              <th>Due Date</th>
+              <th>Description</th>
+              <th>Done?</th>
+              <th>Delete?</th>
+          </tr>
+      </table>
+      <button id="addToDo">Add To Do</button>
+      <form id="AddNewToDo" style="display: none;">
+          <label for="title">Title:</label><br>
+          <input type="text" id="title" name="title"><br>
+  
+          <label for="prio">Priority:</label><br>
+          <input type="text" id="prio" name="prio"><br>
+  
+          <label for="year">Due Date:</label><br>        
+          <input type="year" id="year" name="year"><br>
+          
+          <label for="description">Description:</label><br>  
+          <input type="text" id="description" name="description"><br> 
+
+          <input type="submit" value="Submit">
+        </form>
+      </div>
+
+        
+      </div>
+    </div>
+
+  </body>
+</html>
