@@ -85,9 +85,7 @@ function displayToDos() {
       const index = doneList.findIndex(item => item.id === todo.id);
       myToDos.splice(index, 1);
     }
-    setTimeout(() => {
       displayToDos();
-    }, 1000);
   }
 }
 
