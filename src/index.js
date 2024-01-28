@@ -2,20 +2,21 @@ import "./style.css";
 
 document.addEventListener("DOMContentLoaded", function() {
 
-function createToDo(title, priority, duedate, description, status) {
+function createToDo(title, priority, duedate, description, done) {
   return {
     title,
     priority,
     duedate,
     description,
-    status
+    done
   };
 }
 
 let myToDos = [];
+let doneList = [];
 
-function addToDo(title, priority, duedate, description, status) {
-  let todo = createToDo(title, priority, duedate, description, status);
+function addToDo(title, priority, duedate, description, done) {
+  let todo = createToDo(title, priority, duedate, description, done);
   myToDos.push(todo);
 }
 
@@ -26,10 +27,11 @@ addToDo('clean the bathroom', 'C', '2001', 'lorem ipsum lorem ipsum', false);
 function displayToDos() {
   const table = document.getElementById('toDoTable');
 
+  //delete existing rows 
   while (table.rows.length > 1) {
       table.deleteRow(1);
     }  
-
+  //create a table with the content of myToDos array
   for (let i=0; i < myToDos.length; i++) {
       let todo = myToDos[i];
       let row = document.createElement('tr');
@@ -50,16 +52,18 @@ function displayToDos() {
       descriptionCell.textContent = todo.description;
       row.appendChild(descriptionCell);
 
-      let statusCell = document.createElement('td');
-      let status = document.createElement('button');
-      status.className = 'statusButton';
-      if (todo.status == true) {
-          status.textContent = 'done'
-      } else {
-          status.textContent = 'not done'
-      }
-      statusCell.appendChild(status);
-      row.appendChild(statusCell);
+      let doneCell = document.createElement('td');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.id = 'doneCheckbox_' + myToDos.indexOf(todo);
+      checkbox.checked = todo.done;
+
+      checkbox.addEventListener('change', function() {
+        handleCheckboxChange(todo);
+      });
+
+      doneCell.appendChild(checkbox);
+      row.appendChild(doneCell);
 
       let deleteCell = document.createElement('td');
       let deletebutton = document.createElement('button');
@@ -70,17 +74,52 @@ function displayToDos() {
 
       table.appendChild(row);
   }
+  function handleCheckboxChange(todo) {
+    todo.done != todo.done;
+    if (todo.done) {
+      myToDos.push(todo);
+      const index = doneList.findIndex(item => item.id === todo.id);
+      doneList.splice(index, 1);
+    } else {
+      doneList.push(todo);
+      const index = doneList.findIndex(item => item.id === todo.id);
+      myToDos.splice(index, 1);
+    }
+    setTimeout(() => {
+      displayToDos();
+    }, 1000);
+  }
 }
 
 displayToDos();
 
+function addSubmitEventListener() {
+  document.getElementById('AddNewToDo').addEventListener('submit', function(event) {
+    event.preventDefault();
+    var title = document.getElementById('title').value;
+    var priority = document.getElementById('prio').value;
+    var dueDate = document.getElementById('year').value;
+    var description = document.getElementById('description').value;
+
+    addToDo(title, priority, dueDate, description);
+    displayToDos();
+  })
+
+}
+
+
+//show form to create a new to do 
 document.getElementById('addToDo').addEventListener('click', function() {
   let form = document.getElementById('AddNewToDo');
   if (form.style.display === 'none') {
     form.style.display = 'block';
+    addSubmitEventListener();
   } else {
     form.style.display = 'none';
   }
 });
+
+//checkbox event listener
+document.getElementById('')
 
 });
