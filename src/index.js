@@ -2,21 +2,24 @@ import "./style.css";
 
 document.addEventListener("DOMContentLoaded", function() {
 
-function createToDo(title, priority, duedate, description, done) {
-  return {
-    title,
-    priority,
-    duedate,
-    description,
-    done
-  };
-}
+  function createToDo(title, priority, duedate, description, done, id) {
+    const todoId = id || generateUniqueId();
+    
+    return {
+      title,
+      priority,
+      duedate,
+      description,
+      done,
+      id: todoId
+    };
+  }
 
 let myToDos = [];
 let doneList = [];
 
 function addToDo(title, priority, duedate, description, done) {
-  let todo = createToDo(title, priority, duedate, description, done);
+  let todo = createToDo(title, priority, duedate, description, done, false);
   myToDos.push(todo);
 }
 
@@ -66,27 +69,47 @@ function displayToDos() {
       row.appendChild(doneCell);
 
       let deleteCell = document.createElement('td');
-      let deletebutton = document.createElement('button');
-      deletebutton.className = 'deleteButton';
-      deletebutton.textContent = 'Delete';
-      deleteCell.appendChild(deletebutton);
-      row.appendChild(deleteCell)
+      let deleteIcon = document.createElement('img');
+      deleteIcon.src = 'trash-can.png'; 
+      deleteIcon.alt = 'Dynamic Image';
+      deleteIcon.className = 'deleteIcon';
+      deleteIcon.width = 25;
+      deleteIcon.id = 'deleteIconClicked_' + myToDos.indexOf(todo);
+      deleteCell.appendChild(deleteIcon); 
 
+      deleteIcon.addEventListener('click', function() {
+        handleDeleteIconClicked(todo);
+      });
+
+      row.appendChild(deleteCell)
       table.appendChild(row);
   }
   function handleCheckboxChange(todo) {
     todo.done != todo.done;
     if (todo.done) {
       myToDos.push(todo);
-      const index = doneList.findIndex(item => item.id === todo.id);
+      let index = doneList.findIndex(obj => obj.id === todo.id);
       doneList.splice(index, 1);
     } else {
       doneList.push(todo);
-      const index = doneList.findIndex(item => item.id === todo.id);
+      let index = myToDos.findIndex(obj => obj.id === todo.id);
       myToDos.splice(index, 1);
     }
+    setTimeout(() => {
       displayToDos();
+    }, 500);
   }
+
+  function handleDeleteIconClicked(todo) {
+    let index = myToDos.findIndex(obj => obj.id === todo.id);
+    if (index !== -1) {
+      myToDos.splice(index, 1);
+      console.log(`Object with id ${todo.id} deleted successfully.`);
+    }
+      displayToDos();
+
+  }
+  
 }
 
 displayToDos();
@@ -119,5 +142,11 @@ document.getElementById('addToDo').addEventListener('click', function() {
 
 //checkbox event listener
 document.getElementById('')
+
+
+//create unique id
+function generateUniqueId() {
+  return Date.now() + Math.floor(Math.random() * 1000);
+}
 
 });
