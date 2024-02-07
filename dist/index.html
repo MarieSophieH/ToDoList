@@ -16,13 +16,17 @@
       <div class="navbar">
         <div class="overview_tasks">
           <div class="title_tasks">Your tasks</div>
-          <div class="taskList">Inbox</div>
+          <div class="taskList" id="inbox_button">Inbox</div>
           <div class="taskList">Today</div>
           <div class="taskList">This week</div>
-          <div class="taskList">Done</div>
+          <div class="taskList" id = "done_list">Done</div>
         </div>
         <div class="overview_projects">
-          <div class="title_tasks">Your projects</div>
+          <table id = "projectTable">
+           <tr>
+            <th>Your projects</th>
+           </tr>
+          </table>
         </div>
       </div>
       <div class="content">
@@ -32,14 +36,14 @@
               <th>Priority</th>
               <th>Due Date</th>
               <th>Description</th>
-              <th>Done?</th>
+              <th id ="done">Done?</th>
               <th>Delete?</th>
           </tr>
       </table>
       <button id="addToDo">Add To Do</button>
       <form id="AddNewToDo" style="display: none;">
-          <label for="title">Title:</label><br>
-          <input type="text" id="title" name="title" placeholder = "my new to do" required><br>
+          <label for="todo_title">Title:</label><br>
+          <input type="text" id="todo_title" name="title" placeholder = "my new to do" required><br>
   
           <label for="prio">Priority:</label><br>
           <input type="text" id="prio" name="prio" placeholder = "A"><br>
@@ -50,8 +54,17 @@
           <label for="description">Description:</label><br>  
           <input type="text" id="description" name="description"><br> 
 
-          <input type="submit" value="Submit">
+
+
+          <input type="submit" value="Add">
         </form>
+
+        <button id="addProject">Add Project</button>
+        <form id="AddNewProject" style="display: none;">
+            <label for="project_title">Title:</label><br>
+            <input type="text" id="project_title" name="title" placeholder = "my new project" required><br>
+            <input type="submit" value="Create">
+          </form>
       </div>
 
         

@@ -15,19 +15,34 @@ document.addEventListener("DOMContentLoaded", function() {
     };
   }
 
+  function createProject(title, id) {
+    const projectId = id || generateUniqueId();
+    
+    return {
+      title,
+      id: projectId
+    };
+  }
 let myToDos = [];
 let doneList = [];
+let myProjects = [];
 
 function addToDo(title, priority, duedate, description, done) {
   let todo = createToDo(title, priority, duedate, description, done, false);
   myToDos.push(todo);
 }
 
+function addProject(title) {
+  let project = createProject(title);
+  myProjects.push(project);
+}
+
 addToDo('go for a run', 'B', '2002', 'lorem ipsum lorem ipsum', false);
 addToDo('walk the dog', 'A', '2004',  'lorem ipsum lorem ipsum', false);
 addToDo('clean the bathroom', 'C', '2001', 'lorem ipsum lorem ipsum', false);
+addProject('Renovate House');
 
-function displayToDos() {
+function displayToDos(todo_array) {
   const table = document.getElementById('toDoTable');
 
   //delete existing rows 
@@ -35,8 +50,8 @@ function displayToDos() {
       table.deleteRow(1);
     }  
   //create a table with the content of myToDos array
-  for (let i=0; i < myToDos.length; i++) {
-      let todo = myToDos[i];
+  for (let i=0; i < todo_array.length; i++) {
+      let todo = todo_array[i];
       let row = document.createElement('tr');
       row.setAttribute('data-index', i);
       let titleCell = document.createElement('td');
@@ -58,11 +73,11 @@ function displayToDos() {
       let doneCell = document.createElement('td');
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
-      checkbox.id = 'doneCheckbox_' + myToDos.indexOf(todo);
+      checkbox.id = 'doneCheckbox_' + todo_array.indexOf(todo);
       checkbox.checked = todo.done;
 
       checkbox.addEventListener('change', function() {
-        handleCheckboxChange(todo);
+        handleCheckboxChange(todo, todo_array);
       });
 
       doneCell.appendChild(checkbox);
@@ -74,56 +89,135 @@ function displayToDos() {
       deleteIcon.alt = 'Dynamic Image';
       deleteIcon.className = 'deleteIcon';
       deleteIcon.width = 25;
-      deleteIcon.id = 'deleteIconClicked_' + myToDos.indexOf(todo);
+      deleteIcon.id = 'deleteIconClicked_' + todo_array.indexOf(todo);
       deleteCell.appendChild(deleteIcon); 
 
       deleteIcon.addEventListener('click', function() {
-        handleDeleteIconClicked(todo);
+        handleDeleteIconClicked(todo, todo_array);
       });
 
       row.appendChild(deleteCell)
       table.appendChild(row);
   }
-  function handleCheckboxChange(todo) {
-    todo.done != todo.done;
+  function handleCheckboxChange(todo, my_todo_array) {
+    todo.done = !todo.done;
     if (todo.done) {
-      myToDos.push(todo);
-      let index = doneList.findIndex(obj => obj.id === todo.id);
-      doneList.splice(index, 1);
-    } else {
       doneList.push(todo);
       let index = myToDos.findIndex(obj => obj.id === todo.id);
       myToDos.splice(index, 1);
+    } else {
+
+      myToDos.push(todo);
+      let index = doneList.findIndex(obj => obj.id === todo.id);
+      doneList.splice(index, 1);
     }
     setTimeout(() => {
-      displayToDos();
+      displayToDos(my_todo_array);
     }, 500);
   }
 
-  function handleDeleteIconClicked(todo) {
-    let index = myToDos.findIndex(obj => obj.id === todo.id);
+  function handleDeleteIconClicked(todo, todo_array) {
+    let index = todo_array.findIndex(obj => obj.id === todo.id);
     if (index !== -1) {
-      myToDos.splice(index, 1);
+      todo_array.splice(index, 1);
       console.log(`Object with id ${todo.id} deleted successfully.`);
     }
-      displayToDos();
+      displayToDos(todo_array);
+      console.log("x")
 
   }
   
 }
+displayToDos(myToDos);
 
-displayToDos();
+function displayProjects() {
+  const table = document.getElementById('projectTable');
 
-function addSubmitEventListener() {
+  //delete existing rows 
+  while (table.rows.length > 1) {
+      table.deleteRow(1);
+    }  
+  //create a table with the content of myToDos array
+  for (let i=0; i < myProjects.length; i++) {
+      let project = myProjects[i];
+      let row = document.createElement('tr');
+      let titleCell = document.createElement('td');
+      titleCell.textContent = project.title;
+      row.appendChild(titleCell);
+
+      let deleteCell = document.createElement('td');
+      let deleteIcon = document.createElement('img');
+      deleteIcon.src = 'trash-can.png'; 
+      deleteIcon.alt = 'Dynamic Image';
+      deleteIcon.className = 'deleteIcon';
+      deleteIcon.width = 25;
+      deleteIcon.id = 'deleteIconClicked_' + myProjects.indexOf(project);
+      deleteCell.appendChild(deleteIcon); 
+
+      deleteIcon.addEventListener('click', function() {
+        handleDeleteIconClicked(project, myProjects);
+      });
+
+      row.appendChild(deleteCell)
+      table.appendChild(row);
+  }
+
+  function handleDeleteIconClicked(project, myProjects) {
+    let index = myProjects.findIndex(obj => obj.id === project.id);
+    if (index !== -1) {
+      myProjects.splice(index, 1);
+      console.log(`Object with id ${project.id} deleted successfully.`);
+    }
+      displayProjects();
+
+  }
+  
+}
+displayProjects();
+
+function add_Inbox_EventListener() {
+  let inbox_button = document.getElementById('inbox_button');
+  inbox_button.addEventListener('click', function(){
+    displayToDos(myToDos);
+  });
+}
+add_Inbox_EventListener();
+
+function add_Done_EventListener() {
+  let done_button = document.getElementById('done_list');
+  console.log('done clicked 1');
+  done_button.addEventListener('click', function(){
+    displayToDos(doneList);
+    console.log('done clicked 2');
+  });
+}
+add_Done_EventListener();
+
+function addSubmitEventListener_ToDo() {
   document.getElementById('AddNewToDo').addEventListener('submit', function(event) {
     event.preventDefault();
-    var title = document.getElementById('title').value;
+    var title = document.getElementById('todo_title').value;
     var priority = document.getElementById('prio').value;
     var dueDate = document.getElementById('year').value;
     var description = document.getElementById('description').value;
+    document.getElementById('todo_title').value = "";
+    document.getElementById('prio').value = "";
+    document.getElementById('year').value = "";
+    document.getElementById('description').value = "";
 
     addToDo(title, priority, dueDate, description);
-    displayToDos();
+    displayToDos(myToDos);
+  })
+
+}
+
+function addSubmitEventListener_Project() {
+  document.getElementById('AddNewProject').addEventListener('submit', function(event) {
+    event.preventDefault();
+    var title = document.getElementById('project_title').value;
+    document.getElementById('project_title').value = "";
+    addProject(title);
+    displayProjects();
   })
 
 }
@@ -134,15 +228,22 @@ document.getElementById('addToDo').addEventListener('click', function() {
   let form = document.getElementById('AddNewToDo');
   if (form.style.display === 'none') {
     form.style.display = 'block';
-    addSubmitEventListener();
+    addSubmitEventListener_ToDo();
   } else {
     form.style.display = 'none';
   }
 });
 
-//checkbox event listener
-document.getElementById('')
-
+//show form to create a new project
+document.getElementById('addProject').addEventListener('click', function() {
+  let form = document.getElementById('AddNewProject');
+  if (form.style.display === 'none') {
+    form.style.display = 'block';
+    addSubmitEventListener_Project();
+  } else {
+    form.style.display = 'none';
+  }
+});
 
 //create unique id
 function generateUniqueId() {
