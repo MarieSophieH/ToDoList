@@ -38,9 +38,11 @@ function addProject(title) {
   let project = createProject(title);
   myProjects.push(project);
 }
+addProject('no project');
 addProject('Renovate House');
 addProject('Redesign Backyard');
 addProject('Odin Project');
+
 
 addToDo('go for a run', 'B', '2002', 'lorem ipsum lorem ipsum', myProjects[0] , false);
 addToDo('walk the dog', 'A', '2004',  'lorem ipsum lorem ipsum', myProjects[1], false);
@@ -154,7 +156,7 @@ function displayProjects() {
       table.deleteRow(1);
     }  
   //create a table with the content of myToDos array
-  for (let i=0; i < myProjects.length; i++) {
+  for (let i=1; i < myProjects.length; i++) {
       let project = myProjects[i];
       let row = document.createElement('tr');
       let titleCell = document.createElement('td');
@@ -186,10 +188,20 @@ function displayProjects() {
     if (index !== -1) {
       myProjects.splice(index, 1);
       console.log(`Object with id ${project.id} deleted successfully.`);
+      checkForToDos(project);
     }
       displayProjects();
       upDateProjectOptions();
   }  
+
+  function checkForToDos(project){
+    for(let i=0; i<myToDos.length; i++){
+      if(myToDos[i].project == project){
+        myToDos[i].project = myToDos[0].project;
+        displayToDos(myToDos);
+      }
+    }
+  }
 
   function displayTodosForProject(projectId) {
     const todosForProject = myToDos.filter(todo => todo.project.id === projectId); 
@@ -240,6 +252,8 @@ function addSubmitEventListener_ToDo() {
       if (myProjects[i].id == selectedProjectId){
         project = myProjects[i];
         break;
+      } else {
+        project = myProjects[1];
       }
     }
     console.log(`project title is ${myProjects[1].title}`);
