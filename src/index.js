@@ -2,7 +2,7 @@ import "./style.css";
 
 document.addEventListener("DOMContentLoaded", function() {
 
-  function createToDo(title, priority, duedate, description, done, id) {
+  function createToDo(title, priority, duedate, description, project, done, id) {
     const todoId = id || generateUniqueId();
     
     return {
@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function() {
       priority,
       duedate,
       description,
+      project,
       done,
       id: todoId
     };
@@ -27,8 +28,9 @@ let myToDos = [];
 let doneList = [];
 let myProjects = [];
 
-function addToDo(title, priority, duedate, description, done) {
-  let todo = createToDo(title, priority, duedate, description, done, false);
+function addToDo(title, priority, duedate, description, project, done) {
+  let todo = createToDo(title, priority, duedate, description, project, done, false);
+  console.log(`I created the todo associated with project ${project.title}`);
   myToDos.push(todo);
 }
 
@@ -36,11 +38,14 @@ function addProject(title) {
   let project = createProject(title);
   myProjects.push(project);
 }
-
-addToDo('go for a run', 'B', '2002', 'lorem ipsum lorem ipsum', false);
-addToDo('walk the dog', 'A', '2004',  'lorem ipsum lorem ipsum', false);
-addToDo('clean the bathroom', 'C', '2001', 'lorem ipsum lorem ipsum', false);
 addProject('Renovate House');
+addProject('Redesign Backyard');
+addProject('Odin Project');
+
+addToDo('go for a run', 'B', '2002', 'lorem ipsum lorem ipsum', myProjects[0] , false);
+addToDo('walk the dog', 'A', '2004',  'lorem ipsum lorem ipsum', myProjects[1], false);
+addToDo('clean the bathroom', 'C', '2001', 'lorem ipsum lorem ipsum', myProjects[2], false);
+
 
 function displayToDos(todo_array) {
   const table = document.getElementById('toDoTable');
@@ -49,11 +54,11 @@ function displayToDos(todo_array) {
   while (table.rows.length > 1) {
       table.deleteRow(1);
     }  
-  //create a table with the content of myToDos array
+  //create a table with the content of todo_array
   for (let i=0; i < todo_array.length; i++) {
       let todo = todo_array[i];
       let row = document.createElement('tr');
-      row.setAttribute('data-index', i);
+
       let titleCell = document.createElement('td');
       titleCell.textContent = todo.title;
       row.appendChild(titleCell);
@@ -70,9 +75,14 @@ function displayToDos(todo_array) {
       descriptionCell.textContent = todo.description;
       row.appendChild(descriptionCell);
 
+      let projectCell = document.createElement('td');
+      projectCell.textContent = todo.project ? todo.project.title : "No Project"; // Check if todo.project is defined
+      row.appendChild(projectCell);
+
       let doneCell = document.createElement('td');
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
+      checkbox.className = 'checkbox';
       checkbox.id = 'doneCheckbox_' + todo_array.indexOf(todo);
       checkbox.checked = todo.done;
 
@@ -105,6 +115,12 @@ function displayToDos(todo_array) {
       doneList.push(todo);
       let index = myToDos.findIndex(obj => obj.id === todo.id);
       myToDos.splice(index, 1);
+
+      if (my_todo_array != myToDos) {
+        let index = my_todo_array.findIndex(obj => obj.id === todo.id);
+        my_todo_array.splice(index, 1);
+      }
+
     } else {
 
       myToDos.push(todo);
@@ -123,9 +139,9 @@ function displayToDos(todo_array) {
       console.log(`Object with id ${todo.id} deleted successfully.`);
     }
       displayToDos(todo_array);
-      console.log("x")
 
   }
+
   
 }
 displayToDos(myToDos);
@@ -143,6 +159,9 @@ function displayProjects() {
       let row = document.createElement('tr');
       let titleCell = document.createElement('td');
       titleCell.textContent = project.title;
+      titleCell.addEventListener('click', function(){
+        displayTodosForProject(project.id);
+      });
       row.appendChild(titleCell);
 
       let deleteCell = document.createElement('td');
@@ -169,9 +188,13 @@ function displayProjects() {
       console.log(`Object with id ${project.id} deleted successfully.`);
     }
       displayProjects();
+      upDateProjectOptions();
+  }  
 
+  function displayTodosForProject(projectId) {
+    const todosForProject = myToDos.filter(todo => todo.project.id === projectId); 
+    displayToDos(todosForProject);
   }
-  
 }
 displayProjects();
 
@@ -200,12 +223,32 @@ function addSubmitEventListener_ToDo() {
     var priority = document.getElementById('prio').value;
     var dueDate = document.getElementById('year').value;
     var description = document.getElementById('description').value;
+
     document.getElementById('todo_title').value = "";
     document.getElementById('prio').value = "";
     document.getElementById('year').value = "";
     document.getElementById('description').value = "";
+    var selectedProjectId = document.getElementById('associated_project').value; // Get the project ID
+    console.log(`project id is ${selectedProjectId}`);
+    var project = null;
+    // Find the project object corresponding to the selected project ID
+    for (let i=0; i<myProjects.length; i++) {
+      console.log(`checking project ${i}`);
+      console.log(`checking project ${i}: ${myProjects[i].title}`);
+      console.log(`checking project ${i}: ${myProjects[i].id}`);
+      console.log(`selected project id is ${selectedProjectId}`);
+      if (myProjects[i].id == selectedProjectId){
+        project = myProjects[i];
+        break;
+      }
+    }
+    console.log(`project title is ${myProjects[1].title}`);
+    
 
-    addToDo(title, priority, dueDate, description);
+
+    //console.log('something wrong');
+
+    addToDo(title, priority, dueDate, description, project, false);
     displayToDos(myToDos);
   })
 
@@ -218,7 +261,8 @@ function addSubmitEventListener_Project() {
     document.getElementById('project_title').value = "";
     addProject(title);
     displayProjects();
-  })
+    upDateProjectOptions();
+  });
 
 }
 
@@ -228,11 +272,13 @@ document.getElementById('addToDo').addEventListener('click', function() {
   let form = document.getElementById('AddNewToDo');
   if (form.style.display === 'none') {
     form.style.display = 'block';
+    upDateProjectOptions();
     addSubmitEventListener_ToDo();
   } else {
     form.style.display = 'none';
   }
 });
+
 
 //show form to create a new project
 document.getElementById('addProject').addEventListener('click', function() {
@@ -248,6 +294,18 @@ document.getElementById('addProject').addEventListener('click', function() {
 //create unique id
 function generateUniqueId() {
   return Date.now() + Math.floor(Math.random() * 1000);
+}
+
+
+function upDateProjectOptions(){
+  let selectElement = document.getElementById('associated_project');
+  selectElement.innerHTML = '';
+  myProjects.forEach(projectObject => {
+    let option = document.createElement('option');
+    option.value = projectObject.id;
+    option.textContent = projectObject.title;
+    selectElement.appendChild(option);
+  });
 }
 
 });
