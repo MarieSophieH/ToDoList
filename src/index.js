@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
       id: projectId
     };
   }
+
 let myToDos = [];
 let doneList = [];
 let myProjects = [];
@@ -32,22 +33,42 @@ function addToDo(title, priority, duedate, description, project, done) {
   let todo = createToDo(title, priority, duedate, description, project, done, false);
   console.log(`I created the todo associated with project ${project.title}`);
   myToDos.push(todo);
+  saveData( "todos", myToDos);
 }
 
 function addProject(title) {
   let project = createProject(title);
   myProjects.push(project);
+  saveData( "projects", myProjects);
 }
-addProject('no project');
-addProject('Renovate House');
-addProject('Redesign Backyard');
-addProject('Odin Project');
+
+function checkLocalStorage(key, examples) {
+  function examples(examples){
+    if (examples == 'defaultToDos'){
+    const defaultToDos = [addToDo('go for a run', 'B', '2002', 'lorem ipsum lorem ipsum', myProjects[0] , false), addToDo('walk the dog', 'A', '2004',  'lorem ipsum lorem ipsum', myProjects[1], false), addToDo('clean the bathroom', 'C', '2001', 'lorem ipsum lorem ipsum', myProjects[2], false)];
+    }
+    else {
+      const defaultProjects = [addProject('no project'), addProject('Renovate House'), addProject('Redesign Backyard'), addProject('Odin Project')];
+    }
+  }
+  var data = localStorage.getItem(key);
+  console.log(`get Item ${data}`);
+  data = data ? JSON.parse(data) : examples();
+
+  return data;
+}
+
+function getData(key) {
+  return JSON.parse(localStorage.getItem(key)) || [];
+}
+
+function saveData(key, data) {
+  localStorage.setItem(key, JSON.stringify(data));
+}
 
 
-addToDo('go for a run', 'B', '2002', 'lorem ipsum lorem ipsum', myProjects[0] , false);
-addToDo('walk the dog', 'A', '2004',  'lorem ipsum lorem ipsum', myProjects[1], false);
-addToDo('clean the bathroom', 'C', '2001', 'lorem ipsum lorem ipsum', myProjects[2], false);
-
+myProjects = checkLocalStorage("projects", 'defaultProjects');
+myToDos = checkLocalStorage("todos", 'defaultToDos');
 
 function displayToDos(todo_array) {
   const table = document.getElementById('toDoTable');
@@ -132,6 +153,7 @@ function displayToDos(todo_array) {
     setTimeout(() => {
       displayToDos(my_todo_array);
     }, 500);
+    saveData("todos", myToDos);
   }
 
   function handleDeleteIconClicked(todo, todo_array) {
@@ -141,7 +163,7 @@ function displayToDos(todo_array) {
       console.log(`Object with id ${todo.id} deleted successfully.`);
     }
       displayToDos(todo_array);
-
+      saveData("todos", myToDos);
   }
 
   
@@ -192,6 +214,7 @@ function displayProjects() {
     }
       displayProjects();
       upDateProjectOptions();
+      saveData("projects", myProjects);
   }  
 
   function checkForToDos(project){
@@ -321,5 +344,38 @@ function upDateProjectOptions(){
     selectElement.appendChild(option);
   });
 }
+function storageAvailable(type) {
+  let storage;
+  try {
+    storage = window[type];
+    const x = "__storage_test__";
+    storage.setItem(x, x);
+    storage.removeItem(x);
+    return true;
+  } catch (e) {
+    return (
+      e instanceof DOMException &&
+      // everything except Firefox
+      (e.code === 22 ||
+        // Firefox
+        e.code === 1014 ||
+        // test name field too, because code might not be present
+        // everything except Firefox
+        e.name === "QuotaExceededError" ||
+        // Firefox
+        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+      // acknowledge QuotaExceededError only if there's something already stored
+      storage &&
+      storage.length !== 0
+    );
+  }
+}
+if (storageAvailable("localStorage")) {
+  console.log('Yippee! We can use localStorage awesomeness');
+} else {
+  console.log('no local storage');
+  // Too bad, no localStorage for us
+}
+storageAvailable('sessionStorage')
 
 });
