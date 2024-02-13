@@ -43,17 +43,23 @@ function addProject(title) {
 }
 
 function checkLocalStorage(key, examples) {
-  function examples(examples){
-    if (examples == 'defaultToDos'){
+  function populate(example){
+    if (example == 'defaultToDos'){
     const defaultToDos = [addToDo('go for a run', 'B', '2002', 'lorem ipsum lorem ipsum', myProjects[0] , false), addToDo('walk the dog', 'A', '2004',  'lorem ipsum lorem ipsum', myProjects[1], false), addToDo('clean the bathroom', 'C', '2001', 'lorem ipsum lorem ipsum', myProjects[2], false)];
-    }
-    else {
+
+  }
+    if (example == 'defaultProjects'){
       const defaultProjects = [addProject('no project'), addProject('Renovate House'), addProject('Redesign Backyard'), addProject('Odin Project')];
-    }
+      }
+      if (example == 'empty'){
+        doneList = [];
+        saveData( "done", doneList);
+        console.log('created empty done list. nothing there');
+        }
   }
   var data = localStorage.getItem(key);
   console.log(`get Item ${data}`);
-  data = data ? JSON.parse(data) : examples();
+  data = data ? JSON.parse(data) : populate(examples);
 
   return data;
 }
@@ -69,8 +75,10 @@ function saveData(key, data) {
 
 myProjects = checkLocalStorage("projects", 'defaultProjects');
 myToDos = checkLocalStorage("todos", 'defaultToDos');
+doneList = checkLocalStorage("done", 'empty');
 
 function displayToDos(todo_array) {
+  console.log('todo_array:', todo_array);
   const table = document.getElementById('toDoTable');
 
   //delete existing rows 
@@ -136,6 +144,7 @@ function displayToDos(todo_array) {
     todo.done = !todo.done;
     if (todo.done) {
       doneList.push(todo);
+      saveData("done", doneList);
       let index = myToDos.findIndex(obj => obj.id === todo.id);
       myToDos.splice(index, 1);
 
@@ -149,11 +158,13 @@ function displayToDos(todo_array) {
       myToDos.push(todo);
       let index = doneList.findIndex(obj => obj.id === todo.id);
       doneList.splice(index, 1);
+      saveData("done", doneList);
     }
     setTimeout(() => {
       displayToDos(my_todo_array);
     }, 500);
     saveData("todos", myToDos);
+   // saveData("done", doneList);
   }
 
   function handleDeleteIconClicked(todo, todo_array) {
@@ -164,6 +175,8 @@ function displayToDos(todo_array) {
     }
       displayToDos(todo_array);
       saveData("todos", myToDos);
+      saveData("done", doneList);
+   //   saveData("done", doneList);
   }
 
   
@@ -245,6 +258,7 @@ function add_Done_EventListener() {
   let done_button = document.getElementById('done_list');
   console.log('done clicked 1');
   done_button.addEventListener('click', function(){
+    console.log('displayed done list');
     displayToDos(doneList);
     console.log('done clicked 2');
   });
@@ -374,7 +388,6 @@ if (storageAvailable("localStorage")) {
   console.log('Yippee! We can use localStorage awesomeness');
 } else {
   console.log('no local storage');
-  // Too bad, no localStorage for us
 }
 storageAvailable('sessionStorage')
 
