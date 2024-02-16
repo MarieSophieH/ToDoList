@@ -1,6 +1,14 @@
 import "./style.css";
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 document.addEventListener("DOMContentLoaded", function() {
+
+  flatpickr('#dueDate', {
+    dateFormat: 'Y-m-d', // Date format
+    minDate: 'today', // Optional: restrict to dates starting from today
+    // Additional options as needed
+});
 
   function createToDo(title, priority, duedate, description, project, done, id) {
     const todoId = id || generateUniqueId();
@@ -65,18 +73,27 @@ function checkLocalStorage() {
 
 
 function addExampleDataToLocalStorage() {
+  
+  var today = new Date();
+  var tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  var dayAfterTomorrow = new Date(today);
+  dayAfterTomorrow.setDate(today.getDate() + 2);
 
+  var formattedDate = today.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+  var formattedTomorrow = tomorrow.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+  var formattedDayAfterTomorrow = dayAfterTomorrow.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
   addProject("no project");
   addProject("Master Pancake Making");
   addProject("Time Travel");
 
 
-  addToDo("Make dentist appointment", "High", "2024-02-17", "Call Dr. Brightsmile's office.", myProjects[0], false);
-  addToDo("Experiment with pancake recipes", "High", "2024-02-18", "Experiment with different pancake recipes, including unique flavors and toppings.", myProjects[1], false);
-  addToDo("Practice pancake flipping", "Medium", "2024-02-19", "Practice flipping pancakes in the air without using a spatula.", myProjects[1], false);
-  addToDo("Host pancake party", "Low", "2024-02-19", "Host a pancake tasting party and invite friends or family", myProjects[1], false);
-  addToDo("Invent time machine", "High", "2024-02-19", " ", myProjects[2], false);
-  addToDo("Take selfie with a T-Rex", "Medium", "2024-02-19", "Travel in time and take a selfie with a T-Rex.", myProjects[2], false);
+  addToDo("Make dentist appointment", "High", formattedDate, "Call Dr. Brightsmile's office.", myProjects[0], false);
+  addToDo("Experiment with pancake recipes", "High", formattedDate, "Experiment with different pancake recipes, including unique flavors and toppings.", myProjects[1], false);
+  addToDo("Practice pancake flipping", "Medium", formattedTomorrow, "Practice flipping pancakes in the air without using a spatula.", myProjects[1], false);
+  addToDo("Host pancake party", "Low", formattedDayAfterTomorrow, "Host a pancake tasting party and invite friends or family", myProjects[1], false);
+  addToDo("Invent time machine", "High", formattedTomorrow, " ", myProjects[2], false);
+  addToDo("Take selfie with a T-Rex", "Medium", formattedDayAfterTomorrow, "Travel in time and take a selfie with a T-Rex.", myProjects[2], false);
 
 
   saveDataToLocalStorage();
