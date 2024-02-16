@@ -6,10 +6,13 @@ body {
   display: flex;
   flex-direction: column;
   margin: 50px;
+  font-family: Arial, sans-serif;
+  padding: 0;
 }
 
 .header-text{
     font-size: 30px;
+    color: #0d0d5e;   
 }
 
 
@@ -28,6 +31,12 @@ body {
     width: 30vh;
     margin: 15px;
 }
+input[type="text"] {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 
 table {
   font-family: arial, sans-serif;
@@ -42,16 +51,18 @@ td, th {
   padding: 8px;
 }
 
-tr:nth-child(even) {
-  background-color: #dddddd;
-}
+
 
 button {
-  margin-top: 20px;
+  margin: 20px 0px;
   height: 40px;
   width: 100px;
   border-radius: 2em;
   border: none;
   background-color: grey;
   font-size: 15px;
+}
+button:hover {
+  background-color: #0d0d5e;
+  color: white;
 }

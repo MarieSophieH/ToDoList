@@ -47,6 +47,19 @@ function addProject(title) {
   myProjects.push(project);
 }
 
+function getTodaysTodos() {
+  let todaysTodos = [];
+  var today = new Date();
+  var formattedDate = today.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+  
+  for (let i=0; i < myToDos.length; i++) {
+    if (myToDos[i].duedate == formattedDate){
+      todaysTodos.push(myToDos[i]);
+    }
+  }
+  return todaysTodos;
+}
+
 function saveDataToLocalStorage() {
   localStorage.setItem('myProjects', JSON.stringify(myProjects));
   localStorage.setItem('myToDos', JSON.stringify(myToDos));
@@ -279,6 +292,15 @@ function add_Done_EventListener() {
   });
 }
 add_Done_EventListener();
+
+function add_Today_EventListener() {
+  let today_button = document.getElementById('today');
+  today_button.addEventListener('click', function(){
+    let today_list = getTodaysTodos();
+    displayToDos(today_list);
+  });
+}
+add_Today_EventListener();
 
 function addSubmitEventListener_ToDo() {
   document.getElementById('AddNewToDo').addEventListener('submit', function(event) {

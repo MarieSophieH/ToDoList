@@ -9,7 +9,7 @@
   </head>
   <body>
     <div class="header">
-      <div class="header-text">My To Dos</div>
+      <div class="header-text">Your ToDos</div>
     </div>
 
     <div class="main">
@@ -17,8 +17,7 @@
         <div class="overview_tasks">
           <div class="title_tasks"> <b>Your tasks</b></div>
           <div class="taskList" id="inbox_button">Inbox</div>
-          <div class="taskList">Today</div>
-          <div class="taskList">This week</div>
+          <div class="taskList" id="today">Today</div>
           <div class="taskList" id = "done_list">Done</div>
         </div>
         <div class="overview_projects">
@@ -47,7 +46,11 @@
           <input type="text" id="todo_title" name="title" placeholder = "my new to do" required><br>
   
           <label for="prio">Priority:</label><br>
-          <input type="text" id="prio" name="prio" placeholder = "A"><br>
+          <select id="prio" name="prio">
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </select><br>          
   
           <label for="dueDate">Due Date:</label><br>        
           <input type="text" id="dueDate" placeholder="Select Due Date"><br>
