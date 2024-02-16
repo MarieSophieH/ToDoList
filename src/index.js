@@ -31,54 +31,62 @@ let myProjects = [];
 
 function addToDo(title, priority, duedate, description, project, done) {
   let todo = createToDo(title, priority, duedate, description, project, done, false);
-  console.log(`I created the todo associated with project ${project.title}`);
   myToDos.push(todo);
-  saveData( "todos", myToDos);
 }
 
 function addProject(title) {
   let project = createProject(title);
   myProjects.push(project);
-  saveData( "projects", myProjects);
 }
 
-function checkLocalStorage(key, examples) {
-  function populate(example){
-    if (example == 'defaultToDos'){
-    const defaultToDos = [addToDo('go for a run', 'B', '2002', 'lorem ipsum lorem ipsum', myProjects[0] , false), addToDo('walk the dog', 'A', '2004',  'lorem ipsum lorem ipsum', myProjects[1], false), addToDo('clean the bathroom', 'C', '2001', 'lorem ipsum lorem ipsum', myProjects[2], false)];
+function saveDataToLocalStorage() {
+  localStorage.setItem('myProjects', JSON.stringify(myProjects));
+  localStorage.setItem('myToDos', JSON.stringify(myToDos));
+  localStorage.setItem('doneList', JSON.stringify(doneList));
+}
 
+
+function loadDataFromLocalStorage() {
+  myProjects = JSON.parse(localStorage.getItem('myProjects')) || [];
+  myToDos = JSON.parse(localStorage.getItem('myToDos')) || [];
+  doneList = JSON.parse(localStorage.getItem('doneList')) || [];
+}
+
+
+function checkLocalStorage() {
+  if (!localStorage.getItem('myProjects') || !localStorage.getItem('myToDos') || !localStorage.getItem('doneList')) {
+
+    addExampleDataToLocalStorage();
+  } else {
+
+    loadDataFromLocalStorage();
   }
-    if (example == 'defaultProjects'){
-      const defaultProjects = [addProject('no project'), addProject('Renovate House'), addProject('Redesign Backyard'), addProject('Odin Project')];
-      }
-      if (example == 'empty'){
-        doneList = [];
-        saveData( "done", doneList);
-        console.log('created empty done list. nothing there');
-        }
-  }
-  var data = localStorage.getItem(key);
-  console.log(`get Item ${data}`);
-  data = data ? JSON.parse(data) : populate(examples);
-
-  return data;
-}
-
-function getData(key) {
-  return JSON.parse(localStorage.getItem(key)) || [];
-}
-
-function saveData(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
 }
 
 
-myProjects = checkLocalStorage("projects", 'defaultProjects');
-myToDos = checkLocalStorage("todos", 'defaultToDos');
-doneList = checkLocalStorage("done", 'empty');
+function addExampleDataToLocalStorage() {
+
+  addProject("no project");
+  addProject("Master Pancake Making");
+  addProject("Time Travel");
+
+
+  addToDo("Make dentist appointment", "High", "2024-02-17", "Call Dr. Brightsmile's office.", myProjects[0], false);
+  addToDo("Experiment with pancake recipes", "High", "2024-02-18", "Experiment with different pancake recipes, including unique flavors and toppings.", myProjects[1], false);
+  addToDo("Practice pancake flipping", "Medium", "2024-02-19", "Practice flipping pancakes in the air without using a spatula.", myProjects[1], false);
+  addToDo("Host pancake party", "Low", "2024-02-19", "Host a pancake tasting party and invite friends or family", myProjects[1], false);
+  addToDo("Invent time machine", "High", "2024-02-19", " ", myProjects[2], false);
+  addToDo("Take selfie with a T-Rex", "Medium", "2024-02-19", "Travel in time and take a selfie with a T-Rex.", myProjects[2], false);
+
+
+  saveDataToLocalStorage();
+}
+
+
+checkLocalStorage();
+
 
 function displayToDos(todo_array) {
-  console.log('todo_array:', todo_array);
   const table = document.getElementById('toDoTable');
 
   //delete existing rows 
@@ -107,7 +115,7 @@ function displayToDos(todo_array) {
       row.appendChild(descriptionCell);
 
       let projectCell = document.createElement('td');
-      projectCell.textContent = todo.project ? todo.project.title : "No Project"; // Check if todo.project is defined
+      projectCell.textContent = todo.project ? todo.project.title : "No Project"; 
       row.appendChild(projectCell);
 
       let doneCell = document.createElement('td');
@@ -144,7 +152,6 @@ function displayToDos(todo_array) {
     todo.done = !todo.done;
     if (todo.done) {
       doneList.push(todo);
-      saveData("done", doneList);
       let index = myToDos.findIndex(obj => obj.id === todo.id);
       myToDos.splice(index, 1);
 
@@ -158,25 +165,20 @@ function displayToDos(todo_array) {
       myToDos.push(todo);
       let index = doneList.findIndex(obj => obj.id === todo.id);
       doneList.splice(index, 1);
-      saveData("done", doneList);
     }
     setTimeout(() => {
       displayToDos(my_todo_array);
     }, 500);
-    saveData("todos", myToDos);
-   // saveData("done", doneList);
+    saveDataToLocalStorage();
   }
 
   function handleDeleteIconClicked(todo, todo_array) {
     let index = todo_array.findIndex(obj => obj.id === todo.id);
     if (index !== -1) {
       todo_array.splice(index, 1);
-      console.log(`Object with id ${todo.id} deleted successfully.`);
     }
       displayToDos(todo_array);
-      saveData("todos", myToDos);
-      saveData("done", doneList);
-   //   saveData("done", doneList);
+      saveDataToLocalStorage();
   }
 
   
@@ -222,12 +224,11 @@ function displayProjects() {
     let index = myProjects.findIndex(obj => obj.id === project.id);
     if (index !== -1) {
       myProjects.splice(index, 1);
-      console.log(`Object with id ${project.id} deleted successfully.`);
       checkForToDos(project);
     }
       displayProjects();
       upDateProjectOptions();
-      saveData("projects", myProjects);
+      saveDataToLocalStorage();
   }  
 
   function checkForToDos(project){
@@ -256,11 +257,8 @@ add_Inbox_EventListener();
 
 function add_Done_EventListener() {
   let done_button = document.getElementById('done_list');
-  console.log('done clicked 1');
   done_button.addEventListener('click', function(){
-    console.log('displayed done list');
     displayToDos(doneList);
-    console.log('done clicked 2');
   });
 }
 add_Done_EventListener();
@@ -270,22 +268,17 @@ function addSubmitEventListener_ToDo() {
     event.preventDefault();
     var title = document.getElementById('todo_title').value;
     var priority = document.getElementById('prio').value;
-    var dueDate = document.getElementById('year').value;
+    var dueDate = document.getElementById('dueDate').value;
     var description = document.getElementById('description').value;
 
     document.getElementById('todo_title').value = "";
     document.getElementById('prio').value = "";
-    document.getElementById('year').value = "";
+    document.getElementById('dueDate').value = "";
     document.getElementById('description').value = "";
     var selectedProjectId = document.getElementById('associated_project').value; // Get the project ID
-    console.log(`project id is ${selectedProjectId}`);
     var project = null;
     // Find the project object corresponding to the selected project ID
     for (let i=0; i<myProjects.length; i++) {
-      console.log(`checking project ${i}`);
-      console.log(`checking project ${i}: ${myProjects[i].title}`);
-      console.log(`checking project ${i}: ${myProjects[i].id}`);
-      console.log(`selected project id is ${selectedProjectId}`);
       if (myProjects[i].id == selectedProjectId){
         project = myProjects[i];
         break;
@@ -293,13 +286,9 @@ function addSubmitEventListener_ToDo() {
         project = myProjects[1];
       }
     }
-    console.log(`project title is ${myProjects[1].title}`);
-    
-
-
-    //console.log('something wrong');
 
     addToDo(title, priority, dueDate, description, project, false);
+    saveDataToLocalStorage();
     displayToDos(myToDos);
   })
 
@@ -311,6 +300,7 @@ function addSubmitEventListener_Project() {
     var title = document.getElementById('project_title').value;
     document.getElementById('project_title').value = "";
     addProject(title);
+    saveDataToLocalStorage();
     displayProjects();
     upDateProjectOptions();
   });
