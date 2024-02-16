@@ -128,6 +128,20 @@ function displayToDos(todo_array) {
       let todo = todo_array[i];
       let row = document.createElement('tr');
 
+      let doneCell = document.createElement('td');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'checkbox';
+      checkbox.id = 'doneCheckbox_' + todo_array.indexOf(todo);
+      checkbox.checked = todo.done;
+
+      checkbox.addEventListener('change', function() {
+        handleCheckboxChange(todo, todo_array);
+      });
+
+      doneCell.appendChild(checkbox);
+      row.appendChild(doneCell);
+
       let titleCell = document.createElement('td');
       titleCell.textContent = todo.title;
       row.appendChild(titleCell);
@@ -148,19 +162,9 @@ function displayToDos(todo_array) {
       projectCell.textContent = todo.project ? todo.project.title : "No Project"; 
       row.appendChild(projectCell);
 
-      let doneCell = document.createElement('td');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'checkbox';
-      checkbox.id = 'doneCheckbox_' + todo_array.indexOf(todo);
-      checkbox.checked = todo.done;
 
-      checkbox.addEventListener('change', function() {
-        handleCheckboxChange(todo, todo_array);
-      });
 
-      doneCell.appendChild(checkbox);
-      row.appendChild(doneCell);
+
 
       let deleteCell = document.createElement('td');
       let deleteIcon = document.createElement('img');
